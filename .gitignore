@@ -36,10 +36,7 @@ build/
 
 # Environment files
 .env
-application.properties.local
-
 # OS files
 .DS_Store
 Thumbs.db
 *.env.*
-src/main/resources/application.properties
