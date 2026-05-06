@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - CampusHire</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; }
+        .box { background: white; padding: 40px; border-radius: 10px; width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #45a049; }
+        p { text-align: center; margin-top: 15px; }
+        a { color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Register</h2>
+        <input type="text" id="name" placeholder="Full Name" />
+        <input type="email" id="email" placeholder="Email" />
+        <input type="password" id="password" placeholder="Password" />
+        <input type="text" id="branch" placeholder="Branch (e.g. CSE)" />
+        <input type="number" id="graduationYear" placeholder="Graduation Year (e.g. 2026)" />
+        <button onclick="register()">Register</button>
+        <p>Already have an account? <a href="/login.html">Login</a></p>
+    </div>
+    <script>
+        async function register() {
+            const data = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                branch: document.getElementById('branch').value,
+                graduationYear: parseInt(document.getElementById('graduationYear').value)
+            };
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                alert('Registered successfully! Please login.');
+                window.location.href = '/login.html';
+            } else {
+                alert('Registration failed. Try again.');
+            }
+        }
+    </script>
+</body>
+</html>
