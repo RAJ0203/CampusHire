@@ -28,4 +28,8 @@ public class ApplicationService {
         app.setStatus(newStatus);
         return repo.save(app);
     }
+
+    public void deleteApplication(Long id) {
+        repo.deleteById(id);
+    }
 }
