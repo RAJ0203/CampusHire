@@ -23,4 +23,20 @@ public class InterviewRoundController {
     public List<InterviewRound> getRounds(@PathVariable Long applicationId) {
         return service.getRoundsByApplicationId(applicationId);
     }
+
+    @PutMapping("/{id}")
+    public InterviewRound updateRound(
+            @PathVariable Long id,
+            @RequestBody InterviewRound round) {
+
+        return service.updateRound(id, round);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteRound(@PathVariable Long id) {
+
+        service.deleteRound(id);
+
+        return "Interview round deleted successfully";
+    }
 }

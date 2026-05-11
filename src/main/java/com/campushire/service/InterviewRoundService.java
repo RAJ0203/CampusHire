@@ -20,4 +20,20 @@ public class InterviewRoundService {
     public List<InterviewRound> getRoundsByApplicationId(Long applicationId) {
         return repository.findByApplicationId(applicationId);
     }
+
+    public InterviewRound updateRound(Long id, InterviewRound updatedRound) {
+
+        InterviewRound round = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Round not found"));
+
+        round.setRoundName(updatedRound.getRoundName());
+        round.setStatus(updatedRound.getStatus());
+        round.setResult(updatedRound.getResult());
+
+        return repository.save(round);
+    }
+
+    public void deleteRound(Long id) {
+        repository.deleteById(id);
+    }
 }
