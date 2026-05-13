@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - CampusHire</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; color: #333; margin: 0; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h2 { margin-top: 0; margin-bottom: 8px; color: #333; }
+    .muted { color: #666; font-size: 14px; margin-top: 0; margin-bottom: 16px; }
+    .error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px; margin-bottom: 12px; display: none; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+    .card-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .card-value { font-size: 28px; font-weight: bold; color: #3b82f6; line-height: 1; }
+    .panel { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+    .panel h3 { margin-top: 0; margin-bottom: 12px; color: #333; }
+    .bar-chart { height: 280px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px 12px 8px; display: flex; align-items: flex-end; gap: 10px; background: #f9fafb; overflow-x: auto; }
+    .bar-item { min-width: 120px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .bar { width: 72px; background: #3b82f6; border-radius: 6px 6px 0 0; display: flex; align-items: flex-start; justify-content: center; color: white; font-weight: bold; font-size: 12px; padding-top: 6px; transition: height 0.25s ease; }
+    .bar-label { margin-top: 8px; font-size: 13px; text-align: center; color: #333; width: 100%; word-break: break-word; }
+    table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    th { background: #3b82f6; color: white; }
+    .empty { color: #666; font-size: 14px; margin: 6px 0 0; }
+    @media (max-width: 640px) { body { padding: 12px; } .card-value { font-size: 24px; } .bar { width: 60px; } th, td { padding: 8px; font-size: 14px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Placement Cell Dashboard</h2>
+    <p class="muted">College-wide placement snapshot.</p>
+    <div id="errorBox" class="error"></div>
+    <div class="cards">
+      <div class="card"><div class="card-label">Total Students</div><div class="card-value" id="totalStudents">0</div></div>
+      <div class="card"><div class="card-label">Total Applications</div><div class="card-value" id="totalApplications">0</div></div>
+      <div class="card"><div class="card-label">Total Offers</div><div class="card-value" id="totalOffers">0</div></div>
+      <div class="card"><div class="card-label">Placement Percentage</div><div class="card-value" id="placementPercentage">0%</div></div>
+    </div>
+    <div class="panel">
+      <h3>Top Companies by Offer Count</h3>
+      <div id="barChart" class="bar-chart"></div>
+      <p id="chartEmpty" class="empty" style="display:none;">No offer data available.</p>
+    </div>
+    <div class="panel">
+      <h3>Application Status Breakdown</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Count</th></tr></thead>
+        <tbody id="statusTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    window.onload = loadAdminStats;
+    function showError(message) { const errorBox = document.getElementById('errorBox'); errorBox.style.display = 'block'; errorBox.textContent = message; }
+    function hideError() { const errorBox = document.getElementById('errorBox'); errorBox.style.display = 'none'; errorBox.textContent = ''; }
+    function loadAdminStats() {
+      fetch('/api/admin/stats').then(response => { if (!response.ok) { throw new Error('Unable to fetch admin stats'); } return response.json(); })
+        .then(stats => { hideError(); fillSummaryCards(stats); renderCompanyBarChart(stats.topCompaniesByOfferCount || {}); renderStatusTable(stats.statusBreakdown || {}); })
+        .catch(() => { showError('Could not load admin dashboard data.'); });
+    }
+    function fillSummaryCards(stats) { document.getElementById('totalStudents').textContent = stats.totalStudents ?? 0; document.getElementById('totalApplications').textContent = stats.totalApplications ?? 0; document.getElementById('totalOffers').textContent = stats.totalOffers ?? 0; const percent = Number(stats.placementPercent ?? 0); document.getElementById('placementPercentage').textContent = percent.toFixed(2) + '%'; }
+    function renderCompanyBarChart(companies) { const chart = document.getElementById('barChart'); const emptyText = document.getElementById('chartEmpty'); chart.innerHTML = ''; const entries = Object.entries(companies); if (entries.length === 0) { emptyText.style.display = 'block'; chart.style.display = 'none'; return; } emptyText.style.display = 'none'; chart.style.display = 'flex'; const maxCount = Math.max(...entries.map(([, count]) => Number(count))); entries.forEach(([company, count]) => { const value = Number(count); const heightPercent = maxCount > 0 ? Math.max((value / maxCount) * 100, 8) : 8; const barItem = document.createElement('div'); barItem.className = 'bar-item'; const bar = document.createElement('div'); bar.className = 'bar'; bar.style.height = heightPercent + '%'; bar.textContent = value; const label = document.createElement('div'); label.className = 'bar-label'; label.textContent = company; barItem.appendChild(bar); barItem.appendChild(label); chart.appendChild(barItem); }); }
+    function renderStatusTable(statusBreakdown) { const tbody = document.getElementById('statusTableBody'); tbody.innerHTML = ''; const rows = Object.entries(statusBreakdown).sort((a, b) => String(a[0]).localeCompare(String(b[0]))); if (rows.length === 0) { tbody.innerHTML = '<tr><td colspan="2">No status data available.</td></tr>'; return; } tbody.innerHTML = rows.map(([status, count]) => '<tr><td>' + status + '</td><td>' + count + '</td></tr>').join(''); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - CampusHire</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; color: #333; margin: 0; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h2 { margin-top: 0; margin-bottom: 16px; color: #333; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .stat-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+    .stat-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: bold; color: #3b82f6; line-height: 1; }
+    .section-title { margin: 8px 0 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; background: white; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    th { background: #3b82f6; color: white; }
+    .status-pill { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; color: white; }
+    .status-applied { background: #6b7280; }
+    .status-shortlisted { background: #0ea5e9; }
+    .status-offered { background: #10b981; }
+    .status-rejected { background: #ef4444; }
+    .muted { color: #666; font-size: 14px; margin-top: 0; margin-bottom: 16px; }
+    .error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px; margin-bottom: 12px; display: none; }
+    @media (max-width: 640px) { body { padding: 12px; } .stat-value { font-size: 24px; } th, td { padding: 8px; font-size: 14px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Student Dashboard</h2>
+    <p class="muted">Placement overview and recent applications.</p>
+    <div id="errorBox" class="error"></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Total Applied</div><div class="stat-value" id="totalApplied">0</div></div>
+      <div class="stat-card"><div class="stat-label">Shortlisted</div><div class="stat-value" id="shortlisted">0</div></div>
+      <div class="stat-card"><div class="stat-label">Offered</div><div class="stat-value" id="offered">0</div></div>
+      <div class="stat-card"><div class="stat-label">Rejected</div><div class="stat-value" id="rejected">0</div></div>
+    </div>
+    <h3 class="section-title">Recent Applications</h3>
+    <table>
+      <thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Applied Date</th></tr></thead>
+      <tbody id="recentApplicationsTable"></tbody>
+    </table>
+  </div>
+  <script>
+    const STUDENT_ID = 1;
+    window.onload = function () { loadDashboardStats(); loadRecentApplications(); };
+    function showError(message) { const errorBox = document.getElementById('errorBox'); errorBox.style.display = 'block'; errorBox.textContent = message; }
+    function hideError() { const errorBox = document.getElementById('errorBox'); errorBox.style.display = 'none'; errorBox.textContent = ''; }
+    function loadDashboardStats() {
+      fetch('/api/dashboard/' + STUDENT_ID).then(response => { if (!response.ok) { throw new Error('Unable to fetch dashboard stats'); } return response.json(); })
+        .then(stats => { document.getElementById('totalApplied').textContent = stats.totalApplied ?? 0; document.getElementById('shortlisted').textContent = stats.shortlisted ?? 0; document.getElementById('offered').textContent = stats.offered ?? 0; document.getElementById('rejected').textContent = stats.rejected ?? 0; })
+        .catch(() => { showError('Could not load dashboard stats.'); });
+    }
+    function loadRecentApplications() {
+      fetch('/api/applications/student/' + STUDENT_ID).then(response => { if (!response.ok) { throw new Error('Unable to fetch recent applications'); } return response.json(); })
+        .then(applications => { hideError(); const tbody = document.getElementById('recentApplicationsTable'); const recent = [...applications].sort((a, b) => new Date(b.appliedDate) - new Date(a.appliedDate)).slice(0, 8);
+          if (recent.length === 0) { tbody.innerHTML = '<tr><td colspan="4">No applications found.</td></tr>'; return; }
+          tbody.innerHTML = recent.map(app => { const statusClass = 'status-' + String(app.status || '').toLowerCase(); return '<tr>' + '<td>' + (app.companyName || '-') + '</td>' + '<td>' + (app.role || '-') + '</td>' + '<td><span class="status-pill ' + statusClass + '">' + (app.status || '-') + '</span></td>' + '<td>' + (app.appliedDate || '-') + '</td>' + '</tr>'; }).join(''); })
+        .catch(() => { showError('Could not load recent applications.'); });
+    }
+  </script>
+</body>
+</html>
