@@ -2,6 +2,9 @@ package com.campushire.model;
 
 import jakarta.persistence.*;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 @Entity
 public class InterviewRound {
 
@@ -9,8 +12,10 @@ public class InterviewRound {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Round name cannot be empty")
     private String roundName;
     private String result;
+    @NotNull(message = "Application ID is required")
     private Long applicationId;
     private String status;
 

@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/rounds")
 public class InterviewRoundController {
@@ -15,7 +17,7 @@ public class InterviewRoundController {
     private InterviewRoundService service;
 
     @PostMapping
-    public InterviewRound addRound(@RequestBody InterviewRound round) {
+    public InterviewRound addRound(@Valid @RequestBody InterviewRound round) {
         return service.addRound(round);
     }
 
