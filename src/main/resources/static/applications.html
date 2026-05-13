@@ -14,7 +14,7 @@
   </style>
 </head>
 <body>
-  <h2>My Applications</h2>
+  <h2 id='welcome'>My Applications</h2>
   <div>
     <input type='text' id='company' placeholder='Company name'>
     <input type='text' id='role' placeholder='Role (SDE, Analyst)'>
@@ -34,7 +34,10 @@
     <tbody id='appTable'></tbody>
   </table>
 <script>
-  const STUDENT_ID = 1;
+  const STUDENT_ID = localStorage.getItem('studentId');
+  const STUDENT_NAME = localStorage.getItem('studentName');
+  if (!STUDENT_ID) { window.location.href = '/login.html'; }
+  document.getElementById('welcome').textContent = 'My Applications - Welcome, ' + (STUDENT_NAME || 'Student');
   window.onload = loadApplications;
   function loadApplications() {
     fetch('/api/applications/student/' + STUDENT_ID)
