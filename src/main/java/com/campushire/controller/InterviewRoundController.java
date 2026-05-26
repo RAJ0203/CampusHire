@@ -4,11 +4,15 @@ import com.campushire.model.InterviewRound;
 import com.campushire.service.InterviewRoundService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import com.campushire.dto.InterviewRoundRequestDTO;
+import com.campushire.dto.InterviewRoundResponseDTO;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 
@@ -20,38 +24,81 @@ public class InterviewRoundController {
     private InterviewRoundService service;
 
     @PostMapping
-    public ResponseEntity<InterviewRound> addRound(
-            @Valid @RequestBody InterviewRound round) {
+    public ResponseEntity<InterviewRoundResponseDTO> addRound(
+            @Valid @RequestBody InterviewRoundRequestDTO requestDTO) {
+
+        InterviewRound round = new InterviewRound();
+
+        round.setRoundName(requestDTO.getRoundName());
+        round.setResult(requestDTO.getResult());
+        round.setApplicationId(requestDTO.getApplicationId());
+        round.setStatus(requestDTO.getStatus());
 
         InterviewRound savedRound = service.addRound(round);
 
-        return new ResponseEntity<>(savedRound, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                mapToResponseDTO(savedRound),
+                HttpStatus.CREATED
+        );
+    }
+
+    @GetMapping("/paginated")
+    public Page<InterviewRound> getPaginatedRounds(
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy
+
+    ) {
+
+        return service.getPaginatedRounds(page, size, sortBy);
     }
 
     @GetMapping
-    public ResponseEntity<List<InterviewRound>> getAllRounds() {
-        return ResponseEntity.ok(service.getAllRounds());
+    public ResponseEntity<List<InterviewRoundResponseDTO>> getAllRounds() {
+
+        List<InterviewRoundResponseDTO> response =
+                service.getAllRounds()
+                        .stream()
+                        .map(this::mapToResponseDTO)
+                        .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{applicationId}")
-    public ResponseEntity<List<InterviewRound>> getRounds(
+    public ResponseEntity<List<InterviewRoundResponseDTO>> getRounds(
             @PathVariable Long applicationId) {
 
         List<InterviewRound> rounds =
                 service.getRoundsByApplicationId(applicationId);
 
-        return ResponseEntity.ok(rounds);
+        List<InterviewRoundResponseDTO> response =
+                rounds.stream()
+                        .map(this::mapToResponseDTO)
+                        .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<InterviewRound> updateRound(
+    public ResponseEntity<InterviewRoundResponseDTO> updateRound(
             @PathVariable Long id,
-            @RequestBody InterviewRound round) {
+            @RequestBody InterviewRoundRequestDTO requestDTO) {
+
+        InterviewRound round = new InterviewRound();
+
+        round.setRoundName(requestDTO.getRoundName());
+        round.setResult(requestDTO.getResult());
+        round.setApplicationId(requestDTO.getApplicationId());
+        round.setStatus(requestDTO.getStatus());
 
         InterviewRound updatedRound =
                 service.updateRound(id, round);
 
-        return ResponseEntity.ok(updatedRound);
+        return ResponseEntity.ok(
+                mapToResponseDTO(updatedRound)
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -60,5 +107,18 @@ public class InterviewRoundController {
         service.deleteRound(id);
 
         return ResponseEntity.ok("Interview round deleted successfully");
+    }
+
+    private InterviewRoundResponseDTO mapToResponseDTO(InterviewRound round) {
+
+        InterviewRoundResponseDTO dto = new InterviewRoundResponseDTO();
+
+        dto.setId(round.getId());
+        dto.setRoundName(round.getRoundName());
+        dto.setResult(round.getResult());
+        dto.setApplicationId(round.getApplicationId());
+        dto.setStatus(round.getStatus());
+
+        return dto;
     }
 }

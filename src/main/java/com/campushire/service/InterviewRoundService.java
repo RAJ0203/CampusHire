@@ -5,6 +5,11 @@ import com.campushire.repository.InterviewRoundRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.List;
 
 @Service
@@ -36,6 +41,20 @@ public class InterviewRoundService {
 
     public List<InterviewRound> getAllRounds() {
         return repository.findAll();
+    }
+
+    public Page<InterviewRound> getPaginatedRounds(
+            int page,
+            int size,
+            String sortBy) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortBy)
+        );
+
+        return repository.findAll(pageable);
     }
 
     public void deleteRound(Long id) {
