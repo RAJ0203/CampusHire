@@ -2,12 +2,17 @@ package com.campushire.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import com.campushire.enums.InterviewStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Entity
 public class InterviewRound {
@@ -23,6 +28,9 @@ public class InterviewRound {
     private Long applicationId;
     @Enumerated(EnumType.STRING)
     private InterviewStatus status;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     // getters and setters
     public Long getId() {
@@ -59,5 +67,34 @@ public class InterviewRound {
 
     public void setStatus(InterviewStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    public void prePersist() {
+
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+
+        updatedAt = LocalDateTime.now();
     }
 }

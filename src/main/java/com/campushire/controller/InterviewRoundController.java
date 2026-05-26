@@ -55,15 +55,24 @@ public class InterviewRoundController {
     }
 
     @GetMapping
-    public ResponseEntity<List<InterviewRoundResponseDTO>> getAllRounds() {
+    public List<InterviewRoundResponseDTO> getAllRounds() {
 
-        List<InterviewRoundResponseDTO> response =
-                service.getAllRounds()
-                        .stream()
-                        .map(this::mapToResponseDTO)
-                        .toList();
+        return service.getAllRounds().stream().map(round -> {
 
-        return ResponseEntity.ok(response);
+            InterviewRoundResponseDTO responseDTO = new InterviewRoundResponseDTO();
+
+            responseDTO.setId(round.getId());
+            responseDTO.setRoundName(round.getRoundName());
+            responseDTO.setResult(round.getResult());
+            responseDTO.setApplicationId(round.getApplicationId());
+            responseDTO.setStatus(round.getStatus());
+
+            responseDTO.setCreatedAt(round.getCreatedAt());
+            responseDTO.setUpdatedAt(round.getUpdatedAt());
+
+            return responseDTO;
+
+        }).toList();
     }
 
     @GetMapping("/{applicationId}")
@@ -118,6 +127,9 @@ public class InterviewRoundController {
         dto.setResult(round.getResult());
         dto.setApplicationId(round.getApplicationId());
         dto.setStatus(round.getStatus());
+
+        dto.setCreatedAt(round.getCreatedAt());
+        dto.setUpdatedAt(round.getUpdatedAt());
 
         return dto;
     }
