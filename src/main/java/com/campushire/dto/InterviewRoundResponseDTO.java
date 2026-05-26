@@ -1,12 +1,14 @@
 package com.campushire.dto;
 
+import com.campushire.enums.InterviewStatus;
+
 public class InterviewRoundResponseDTO {
 
     private Long id;
     private String roundName;
     private String result;
     private Long applicationId;
-    private String status;
+    private InterviewStatus status;
 
     public Long getId() {
         return id;
@@ -40,11 +42,11 @@ public class InterviewRoundResponseDTO {
         this.applicationId = applicationId;
     }
 
-    public String getStatus() {
+    public InterviewStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InterviewStatus status) {
         this.status = status;
     }
 }

@@ -2,6 +2,7 @@ package com.campushire.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import com.campushire.enums.InterviewStatus;
 
 public class InterviewRoundRequestDTO {
 
@@ -13,7 +14,7 @@ public class InterviewRoundRequestDTO {
     @NotNull(message = "Application ID is required")
     private Long applicationId;
 
-    private String status;
+    private InterviewStatus status;
 
     public String getRoundName() {
         return roundName;
@@ -39,11 +40,11 @@ public class InterviewRoundRequestDTO {
         this.applicationId = applicationId;
     }
 
-    public String getStatus() {
+    public InterviewStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InterviewStatus status) {
         this.status = status;
     }
 }
