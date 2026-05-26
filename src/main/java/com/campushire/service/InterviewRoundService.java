@@ -1,5 +1,5 @@
 package com.campushire.service;
-
+import com.campushire.exception.ResourceNotFoundException;
 import com.campushire.model.InterviewRound;
 import com.campushire.repository.InterviewRoundRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,8 @@ public class InterviewRoundService {
     public InterviewRound updateRound(Long id, InterviewRound updatedRound) {
 
         InterviewRound round = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Round not found"));
+                .orElseThrow(() ->
+                    new ResourceNotFoundException("Interview round not found"));
 
         round.setRoundName(updatedRound.getRoundName());
         round.setStatus(updatedRound.getStatus());
