@@ -28,6 +28,11 @@ public class InterviewRoundController {
         return new ResponseEntity<>(savedRound, HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<InterviewRound>> getAllRounds() {
+        return ResponseEntity.ok(service.getAllRounds());
+    }
+
     @GetMapping("/{applicationId}")
     public ResponseEntity<List<InterviewRound>> getRounds(
             @PathVariable Long applicationId) {

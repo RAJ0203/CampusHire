@@ -34,6 +34,10 @@ public class InterviewRoundService {
         return repository.save(round);
     }
 
+    public List<InterviewRound> getAllRounds() {
+        return repository.findAll();
+    }
+
     public void deleteRound(Long id) {
         repository.deleteById(id);
     }
