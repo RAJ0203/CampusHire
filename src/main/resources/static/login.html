@@ -3,46 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - CampusHire</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; }
-        .box { background: white; padding: 40px; border-radius: 10px; width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #1976D2; }
-        p { text-align: center; margin-top: 15px; }
-        a { color: #2196F3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: #0f1117;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            background: #0f1117;
+            position: relative;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            font-family: 'Sora', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 60px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span { color: #6366f1; }
+
+        .tagline {
+            font-family: 'Sora', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .tagline em {
+            font-style: normal;
+            color: #6366f1;
+        }
+
+        .sub {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.6;
+            max-width: 340px;
+        }
+
+        .right-panel {
+            width: 480px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 50px;
+        }
+
+        .form-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f1117;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .form-sub {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 36px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: #111827;
+            background: #f9fafb;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            background: #ffffff;
+        }
+
+        .error-msg {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:hover { background: #4f46e5; }
+        .btn:active { transform: scale(0.98); }
+
+        .btn:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .switch a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .switch a:hover { text-decoration: underline; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1f2937;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #ef4444; }
+
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; padding: 40px 28px; }
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Login</h2>
-        <input type="email" id="email" placeholder="Email" />
-        <input type="password" id="password" placeholder="Password" />
-        <button onclick="login()">Login</button>
-        <p>Don't have an account? <a href="/register.html">Register</a></p>
+    <div class="left-panel">
+        <div class="brand">Campus<span>Hire</span></div>
+        <div class="tagline">Track your<br>placement<br><em>journey.</em></div>
+        <p class="sub">Log applications, track interview rounds, and stay on top of your campus recruitment process.</p>
     </div>
+
+    <div class="right-panel">
+        <div class="form-title">Welcome back</div>
+        <div class="form-sub">Sign in to your CampusHire account</div>
+
+        <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" placeholder="you@example.com" />
+            <div class="error-msg" id="email-err">Please enter a valid email.</div>
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="••••••••" />
+            <div class="error-msg" id="pass-err">Password cannot be empty.</div>
+        </div>
+
+        <button class="btn" id="loginBtn" onclick="login()">Sign in</button>
+
+        <div class="switch">
+            Don't have an account? <a href="/register.html">Register</a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script>
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast' + (isError ? ' error' : '');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function validate() {
+            let valid = true;
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            const emailErr = document.getElementById('email-err');
+            const passErr = document.getElementById('pass-err');
+
+            emailErr.style.display = 'none';
+            passErr.style.display = 'none';
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailErr.style.display = 'block';
+                valid = false;
+            }
+            if (!pass) {
+                passErr.style.display = 'block';
+                valid = false;
+            }
+            return valid;
+        }
+
         async function login() {
+            if (!validate()) return;
+
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
             const data = {
-                email: document.getElementById('email').value,
+                email: document.getElementById('email').value.trim(),
                 password: document.getElementById('password').value
             };
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (res.ok) {
-                const student = await res.json();
-                localStorage.setItem('studentId', student.id);
-                localStorage.setItem('studentName', student.name);
-                alert('Login successful! Welcome ' + student.name);
-                window.location.href = '/dashboard.html';
-            } else {
-                alert('Invalid email or password!');
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    const student = await res.json();
+                    localStorage.setItem('studentId', student.id);
+                    localStorage.setItem('studentName', student.name);
+                    showToast('Welcome back, ' + student.name + '!');
+                    setTimeout(() => window.location.href = '/dashboard.html', 1000);
+                } else {
+                    showToast('Invalid email or password.', true);
+                    btn.disabled = false;
+                    btn.textContent = 'Sign in';
+                }
+            } catch (e) {
+                showToast('Something went wrong. Try again.', true);
+                btn.disabled = false;
+                btn.textContent = 'Sign in';
             }
         }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') login();
+        });
     </script>
 </body>
 </html>
