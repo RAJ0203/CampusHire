@@ -2,6 +2,7 @@ package com.campushire.service;
 import com.campushire.exception.ResourceNotFoundException;
 import com.campushire.model.InterviewRound;
 import com.campushire.repository.InterviewRoundRepository;
+import com.campushire.enums.InterviewStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,10 @@ public class InterviewRoundService {
 
     public List<InterviewRound> getRoundsByApplicationId(Long applicationId) {
         return repository.findByApplicationId(applicationId);
+    }
+
+    public List<InterviewRound> getRoundsByStatus(InterviewStatus status) {
+        return repository.findByStatus(status);
     }
 
     public InterviewRound updateRound(Long id, InterviewRound updatedRound) {

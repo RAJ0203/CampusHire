@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.campushire.dto.InterviewRoundRequestDTO;
 import com.campushire.dto.InterviewRoundResponseDTO;
+import com.campushire.enums.InterviewStatus;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,19 @@ public class InterviewRoundController {
                 mapToResponseDTO(savedRound),
                 HttpStatus.CREATED
         );
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<InterviewRoundResponseDTO>> getRoundsByStatus(
+            @PathVariable InterviewStatus status) {
+
+        List<InterviewRoundResponseDTO> response =
+                service.getRoundsByStatus(status)
+                        .stream()
+                        .map(this::mapToResponseDTO)
+                        .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/paginated")
